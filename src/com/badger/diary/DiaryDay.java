@@ -5,9 +5,17 @@ import com.badger.scheduleitem.ScheduleItem;
 
 import java.util.ArrayList;
 
-public class DiaryDay {
+/**
+ * @author Artem Yakovlev
+ * @version 0.3
+ * <p>
+ * DiaryDay - является страницой дневника, является неким буфером между Diary и ScheduleItem
+ */
 
+public class DiaryDay {
+    // Дата - уникальный идентификатор в HashMap
     private String date;
+    // Здесь хранятся все дела на день
     private ArrayList<ScheduleItem> dayPlan = new ArrayList<>();
 
     public DiaryDay(String date) {
@@ -18,21 +26,11 @@ public class DiaryDay {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public ArrayList<ScheduleItem> getDayPlan() {
+        return dayPlan;
     }
 
-    public void showDayPlan() {
-        System.out.println("План дня на " + date + ":");
-        for (int i = 0; i < dayPlan.size(); i++) {
-            System.out.println(i + ") " + dayPlan.get(i).getTextOfSchedule());
-        }
-
-        if (dayPlan.size() == 0) {
-            System.out.println("Пока пуст, но Вы можете это исправить");
-        }
-    }
-
+    // Отметить задачу выполненной по index
     public boolean acceptScheduleItem(int index) {
         if (index >= 0 && index < dayPlan.size()) {
             return dayPlan.get(index).accept();
@@ -41,6 +39,7 @@ public class DiaryDay {
         }
     }
 
+    // Отметить задачу проваленной по index
     public boolean cancelScheduleItem(int index) {
         if (index >= 0 && index < dayPlan.size()) {
             return dayPlan.get(index).cancel();
@@ -49,6 +48,7 @@ public class DiaryDay {
         }
     }
 
+    // Добавить задачу в план
     public boolean addScheduleItem(String text) {
 
         for (ScheduleItem scheduleItem : dayPlan) {
@@ -61,6 +61,7 @@ public class DiaryDay {
         return true;
     }
 
+    // Удалить задачу по index
     public boolean deleteScheduleItem(int index) {
         if (index >= 0 && index < dayPlan.size()) {
             dayPlan.remove(index);

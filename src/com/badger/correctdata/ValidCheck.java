@@ -2,6 +2,13 @@ package com.badger.correctdata;
 
 import java.text.SimpleDateFormat;
 
+/**
+ * @author Artem Yakovlev
+ * @version 0.3
+ *
+ *  С помощью данного класса производится проверка входных данных на валидность
+ * */
+
 public class ValidCheck {
 
     //Формат даты, используется при проверке на валидность

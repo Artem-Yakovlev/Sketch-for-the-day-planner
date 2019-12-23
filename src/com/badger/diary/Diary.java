@@ -1,20 +1,29 @@
 package com.badger.diary;
 
-import com.badger.scheduleitem.ScheduleItem;
-
 import java.util.HashMap;
 
+/**
+ * @author Artem Yakovlev
+ * @version 0.3
+ *
+ * Diary - синглтон словаря. Синглтон был использован, так как в данной программе
+ * не будет многопоточности.
+ * */
 public class Diary {
 
+
     private static Diary instance;
+    // HashMap, где ключ это дата
     HashMap<String, DiaryDay> diaryDayHashMap;
+    // План дня, открытый в данный момент
     DiaryDay selectedDay;
 
+    // Приватный конструктр
     private Diary() {
         diaryDayHashMap = new HashMap<>();
-        // Хватаемся за данные
     }
 
+    // Синглтон
     public static synchronized Diary getInstance() {
         if (instance == null) {
             instance = new Diary();
@@ -22,6 +31,7 @@ public class Diary {
         return instance;
     }
 
+    // Добавить план на новую дату
     public boolean createDay(String date) {
         if (!diaryDayHashMap.containsKey(date)) {
             selectedDay = new DiaryDay(date);
@@ -31,6 +41,7 @@ public class Diary {
         return false;
     }
 
+    // Открыть план на другой день по дате
     public boolean selectDay(String date) {
         if (diaryDayHashMap.containsKey(date)) {
             selectedDay = diaryDayHashMap.get(date);
@@ -39,6 +50,7 @@ public class Diary {
         return false;
     }
 
+    // Удалить дневной план по дате
     public boolean removeDay(String date) {
         if (diaryDayHashMap.containsKey(date)) {
             if (selectedDay.equals(diaryDayHashMap.get(date)))
