@@ -1,20 +1,20 @@
 package com.badger;
 
+import com.badger.correctdata.ValidCheck;
 import com.badger.diary.Diary;
 
-import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
 public class Main {
 
-    private static final String[] diaryCommands = new String[]{
+    private static final String[] DIARY_COMMANDS = new String[]{
             "SelectDay [дата], чтобы открыть план на определенную дату",
             "CreateDay [дата], чтобы создать план на определенную дату",
             "DeleteDay [дата], чтобы удалить план по определенной дате",
             "Exit, чтобы закончить работу"
     };
 
-    private static final String[] planCommands = new String[]{
+    private static final String[] PLAN_COMMANDS = new String[]{
             "CompleteTask [номер задачи], чтобы отмеить задачу как выполненную",
             "FailTask [номер задачи], чтобы отметить задачу как проваленную",
             "CreateTask [текст задачи], чтобы создать новую задачу",
@@ -22,8 +22,11 @@ public class Main {
     };
 
     private static final String WARNING_INVALID_DATA = "Дата введена неверно, формат dd.MM.yyyy";
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private static final String PLAN_NOT_FOUND = "Плана на этот день нет в базе";
+    private static final String COMMAND_UNAVAILABLE = "В данный момент команда не доступна, сначала выберите день";
+    private static final String COMMAND_INCORRECTLY = "Команда введена неправильно";
+    private static final String INVALID_INDEX = "Неверно введен индекс";
+    private static final String OBJECT_ALREADY_EXIST = "Такой объект уже существует";
 
     public static void main(String[] args) {
 
@@ -39,12 +42,12 @@ public class Main {
 
                 System.out.println("_".repeat(15));
 
-                for (String commandText : planCommands) {
+                for (String commandText : PLAN_COMMANDS) {
                     System.out.println(commandText);
                 }
             }
 
-            for (String commandText : diaryCommands) {
+            for (String commandText : DIARY_COMMANDS) {
                 System.out.println(commandText);
             }
 
@@ -52,73 +55,63 @@ public class Main {
 
             String actualCommand = input.nextLine().trim();
 
-            String actualArgument;
-            boolean validData, dayIsSelected, isIndex;
+            String actualArgument = "None";
+            boolean validDate;
 
             if (actualCommand.split("\\s").length > 1) {
                 actualArgument = actualCommand.substring(actualCommand.split("\\s")[0].length()).trim();
-                validData = isValidDate(actualArgument);
+                validDate = ValidCheck.isDate(actualArgument);
             } else {
-                validData = false;
-                actualArgument = "None";
+                validDate = false;
             }
 
             actualCommand = actualCommand.split("\\s")[0];
 
-            dayIsSelected = diary.getSelectedDay() != null;
-
-            try {
-                Integer.parseInt(actualArgument);
-                isIndex = true;
-            } catch (NumberFormatException e) {
-                isIndex = false;
-            }
-
             switch (actualCommand) {
 
                 case "CompleteTask":
-                    if (dayIsSelected && isIndex) {
+                    if (diary.getSelectedDay() != null && ValidCheck.isNumber(actualArgument)) {
                         if (!diary.getSelectedDay().acceptScheduleItem(Integer.parseInt(actualArgument))) {
-                            System.out.println("Неверно введен номер задачи");
+                            System.out.println(INVALID_INDEX);
                         }
                     } else {
-                        System.out.println("Команда введена неправильно");
+                        System.out.println(COMMAND_INCORRECTLY);
                     }
                     break;
                 case "FailTask":
-                    if (dayIsSelected && isIndex) {
+                    if (diary.getSelectedDay() != null && ValidCheck.isNumber(actualArgument)) {
                         if (!diary.getSelectedDay().cancelScheduleItem(Integer.parseInt(actualArgument))) {
-                            System.out.println("Неверно введен номер задачи");
+                            System.out.println(INVALID_INDEX);
                         }
                     } else {
-                        System.out.println("Команда введена неправильно");
+                        System.out.println(COMMAND_INCORRECTLY);
                     }
                     break;
                 case "CreateTask":
-                    if (dayIsSelected) {
+                    if (diary.getSelectedDay() != null) {
                         if (!diary.getSelectedDay().addScheduleItem(actualArgument)) {
-                            System.out.println("Такая задача уже существует");
+                            System.out.println(OBJECT_ALREADY_EXIST);
                         }
                     } else {
-                        System.out.println("В данный момент команда не доступна, сначала выберите день");
+                        System.out.println(COMMAND_UNAVAILABLE);
                     }
                     break;
                 case "RemoveTask":
-                    if (dayIsSelected) {
+                    if (diary.getSelectedDay() != null) {
                         if (!diary.getSelectedDay().deleteScheduleItem(Integer.parseInt(actualArgument))) {
-                            System.out.println("Неверно введен номер задачи");
+                            System.out.println(INVALID_INDEX);
                         }
                     } else {
-                        System.out.println("В данный момент команда не доступна, сначала выберите день");
+                        System.out.println(COMMAND_UNAVAILABLE);
                     }
 
                     break;
 
                 case "SelectDay":
 
-                    if (validData) {
+                    if (validDate) {
                         if (!diary.selectDay(actualArgument)) {
-                            System.out.println("Плана на этот день нет в базе");
+                            System.out.println(PLAN_NOT_FOUND);
                         }
                     } else {
                         System.out.println(WARNING_INVALID_DATA);
@@ -127,9 +120,9 @@ public class Main {
 
                 case "CreateDay":
 
-                    if (validData) {
+                    if (validDate) {
                         if (!diary.createDay(actualArgument)) {
-                            System.out.println("План на эту дату уже существует");
+                            System.out.println(OBJECT_ALREADY_EXIST);
                         }
                     } else {
                         System.out.println(WARNING_INVALID_DATA);
@@ -138,9 +131,9 @@ public class Main {
 
                 case "DeleteDay":
 
-                    if (validData) {
+                    if (validDate) {
                         if (!diary.removeDay(actualArgument)) {
-                            System.out.println("Плана на это день нет в базе");
+                            System.out.println(PLAN_NOT_FOUND);
                         }
                     } else {
                         System.out.println(WARNING_INVALID_DATA);
@@ -154,22 +147,10 @@ public class Main {
                     break;
 
                 default:
-                    System.out.println("Некорректный ввод");
+                    System.out.println(COMMAND_INCORRECTLY);
             }
 
             System.out.println("\n".repeat(2));
-        }
-    }
-
-    public static boolean isValidDate(String date) {
-
-        try {
-
-            dateFormat.parse(date);
-            return true;
-
-        } catch (Exception e) {
-            return false;
         }
     }
 }
