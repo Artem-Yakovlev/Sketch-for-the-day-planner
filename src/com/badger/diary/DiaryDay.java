@@ -16,7 +16,7 @@ public class DiaryDay {
     // Дата - уникальный идентификатор в HashMap
     private String date;
     // Здесь хранятся все дела на день
-    private ArrayList<ScheduleItem> dayPlan = new ArrayList<>();
+    private ArrayList<MarkableItem> dayPlan = new ArrayList<>();
 
     public DiaryDay(String date) {
         this.date = date;
@@ -26,7 +26,7 @@ public class DiaryDay {
         return date;
     }
 
-    public ArrayList<ScheduleItem> getDayPlan() {
+    public ArrayList<MarkableItem> getDayPlan() {
         return dayPlan;
     }
 

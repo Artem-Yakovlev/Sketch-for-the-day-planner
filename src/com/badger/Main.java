@@ -178,9 +178,10 @@ public class Main {
                     }
                     break;
 
-                // Выход из программы
+                // Выход из программы и сохранение данных
                 case "Exit":
                     mainProcess = false;
+                    diary.saveDiary();
                     break;
                 default:
                     System.out.println(COMMAND_INCORRECTLY);
